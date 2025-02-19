@@ -4,4 +4,5 @@ app/routes/__pycache__
 TODO.md
 *.env
 test.db
-alembic
+alembic/
+.env

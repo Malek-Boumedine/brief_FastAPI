@@ -3,10 +3,10 @@
 `sudo apt-get install libmariadb-dev libmariadb-dev-compat pkg-config`
 
 
-# pour créer l'utilisateur de la BDD
+# pour créer l'utilisateur de la BDD (se connecter au serveur mariadb avec root)
 ```
-CREATE USER 'loanapi'@'localhost' IDENTIFIED BY '0664080295Malek';
-GRANT ALL PRIVILEGES ON loan.* TO 'loanapi'@'localhost';
+CREATE USER 'utilisateur'@'localhost' IDENTIFIED BY 'mot de passe';
+GRANT ALL PRIVILEGES ON *.* TO 'utilisateur'@'localhost';
 FLUSH PRIVILEGES;
 ```
 
