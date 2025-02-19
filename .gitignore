@@ -2,3 +2,6 @@
 app/routes/__pycache__
 .venv
 TODO.md
+*.env
+test.db
+alembic
