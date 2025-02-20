@@ -5,42 +5,37 @@ from .modeles import *
 
 
 
-
-
-
 load_dotenv(dotenv_path="./app/.env")
 
-DATABASE_USERNAME = os.getenv("DATABASE_USERNAME", None)
-DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", None)
 
-# moteur pour créer la BDD
-bdd_engine = create_engine(f"mariadb+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@localhost:3306/")
-# DB_NAME = "loan"
-DB_NAME = "khad"
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./test.db")  # Par défaut SQLite si non défini
 
-with bdd_engine.connect() as conn:
-    conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}"))
-    conn.execute(text("FLUSH PRIVILEGES"))
+# Vérifier si on utilise MariaDB pour créer la base de données si nécessaire
+if "mariadb" in DATABASE_URL:
+    DATABASE_USERNAME = os.getenv("DATABASE_USERNAME", None)
+    DATABASE_PASSWORD = os.getenv("DATABASE_PASSWORD", None)
+    DB_NAME = "loan"
 
+    # moteur pour créer la BDD
+    temp_engine = create_engine(f"mariadb+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@localhost:3306/")
 
-# URL finale vers la BDD
-DATABASE_URL = f"mariadb+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@localhost:3306/{DB_NAME}"
+    with temp_engine.connect() as conn:
+        conn.execute(text(f"CREATE DATABASE IF NOT EXISTS {DB_NAME}"))
+        conn.execute(text("FLUSH PRIVILEGES"))
+    temp_engine.dispose()
 
-# moteur pour la BDD définitive
-engine = create_engine(DATABASE_URL)
+    DATABASE_URL = f"mariadb+pymysql://{DATABASE_USERNAME}:{DATABASE_PASSWORD}@localhost:3306/{DB_NAME}"  # BDD définitive sous mariadb
 
-# DB test
-database_test = "sqlite:///./test.db"
-engine_test = create_engine(database_test, connect_args={"check_same_thread": False})
-SQLModel.metadata.create_all(engine_test)
-session = Session(engine_test)
+sqlite_args = {"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+engine = create_engine(DATABASE_URL, connect_args=sqlite_args)
 
+SQLModel.metadata.create_all(engine)    # Crée les tables dans la base de données
 
 def db_connection():
-    with engine_test.connect() as connexion:
-        yield connexion
-
-
-
+    session = Session(engine)  # Ouvre une session SQLModel
+    try:
+        yield session  # Garde la session ouverte pour l'API
+    finally:
+        session.close()  # Ferme la session après utilisation
 
 

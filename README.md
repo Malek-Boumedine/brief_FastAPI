@@ -34,3 +34,5 @@ si le changement n'est pas pris en compte (par exemple ajout d'une contrainte), 
 - chercher le fichier portant le nom de la migtration qu'on crée avec `alembic revision --autogenerate -m "commentaire"`
 - une fois les fonctions modifiées, executer `alembic upgrade head` pour appliquer la migration
 
+## astuce : pour générer une clé secrete forte : 
+taper cette commande dans un terminal `openssl rand -hex 32`

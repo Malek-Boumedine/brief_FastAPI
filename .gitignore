@@ -1,5 +1,4 @@
-*/__pycache__
-app/routes/__pycache__
+**/__pycache__
 .venv
 TODO.md
 *.env
