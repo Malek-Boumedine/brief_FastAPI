@@ -5,3 +5,4 @@ TODO.md
 test.db
 alembic/
 .env
+best_cat_boost.pkl
