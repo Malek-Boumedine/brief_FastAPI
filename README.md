@@ -61,7 +61,12 @@ Créer un fichier `.env` avec :
 SECRET_KEY="votre_clé_secrète"
 ALGORITHM="HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES=30
-DATABASE_URL="sqlite:///./test.db"  # ou URL MariaDB
+
+DATABASE_USERNAME = "utilisateur_de_la_BDD"
+DATABASE_PASSWORD = "mon_de_passe"
+
+DATABASE_URL = "mariadb://${DATABASE_USERNAME}:${DATABASE_PASSWORD}@localhost:3306/${DATABASE_NAME}" # Base de données mariaDB
+DATABASE_URL="sqlite:///./test.db"  # Base de données sqlite
 ```
 
 5. extrayez le fichier best_cat_boost.tar.xz.
@@ -135,8 +140,8 @@ Après l'exécution de `populate_db.py`, les identifiants suivants seront dispon
 ## Points d'API Principaux
 
 #### Authentication
+- `POST /auth/activation/{email}` : Activation du compte avec l'email en paramètre
 - `POST /auth/login` : Obtention du token JWT
-- `POST /auth/activation` : Activation du compte
 
 #### Administration
 - `GET /admin/users` : Liste des utilisateurs
