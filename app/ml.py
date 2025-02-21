@@ -80,13 +80,6 @@ def predire(model : "model", donnees : pd.DataFrame) -> int:
     return model.predict(donnees)
 
 
-# modele sans pipeline  
-# model = charger_modele()
-
-# modele avec pipeline
-# model = charger_modele("cat_boost_pileline.pkl")
-
-
 if __name__ == "__main__":
     model = charger_modele("best_cat_boost.pkl")
     features = model.feature_names_
@@ -101,6 +94,4 @@ if __name__ == "__main__":
     print(model.predict_proba(test_df))
     print(list(features))
     print(model.get_cat_feature_indices())
-
-
 
