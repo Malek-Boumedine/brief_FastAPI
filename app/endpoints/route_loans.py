@@ -16,6 +16,24 @@ router = APIRouter(prefix="/loans", tags=["loans"])  # pour les routes de prêts
 
 @router.post("/request")  # pour demander un prêt
 def demande_pret(user_data: LoanRequest, current_user: Annotated[str, Depends(get_current_user)], db: db_dependency) -> dict : 
+    """
+    Traite une demande de prêt et retourne une prédiction d'accord ou de refus.
+
+    Args:
+        user_data (LoanRequest): Données du prêt à analyser.
+        current_user (Users): Utilisateur actuellement authentifié.
+        db (Session): Session de base de données SQLAlchemy.
+
+    Returns:
+        dict: Résultat de la prédiction contenant:
+            - résultat (str): Message indiquant si le prêt est accordé ou non
+            - probabilité d'être accordé (float): Score de probabilité entre 0 et 1
+
+    Note:
+        - Utilise un modèle ML CatBoost pour la prédiction
+        - Enregistre automatiquement la demande dans l'historique
+        - La date de demande est automatiquement ajoutée
+    """
     model = charger_modele()
     features = model.feature_names_
     data = pd.DataFrame([user_data.dict()], columns=features)
@@ -34,6 +52,23 @@ def demande_pret(user_data: LoanRequest, current_user: Annotated[str, Depends(ge
 
 @router.get("/history")   # pour voir l'historique des demandes de prêts
 def history(current_user: Annotated[Users, Depends(get_current_user)], db: db_dependency):
+    """
+    Récupère l'historique des demandes de prêts.
+
+    Args:
+        current_user (Users): Utilisateur actuellement authentifié.
+        db (Session): Session de base de données SQLAlchemy.
+
+    Returns:
+        list: Liste des demandes de prêts.
+            - Pour un admin: toutes les demandes
+            - Pour un utilisateur: uniquement ses demandes
+
+    Note:
+        - Les administrateurs voient toutes les demandes
+        - Les utilisateurs normaux ne voient que leurs propres demandes
+        - Les résultats sont retournés sous forme de dictionnaires mappés
+    """
     role = current_user.role
     if role == "admin":
         liste_demandes = db.execute(text("select * from loan_requests")).mappings().all()
