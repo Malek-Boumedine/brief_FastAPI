@@ -1,9 +1,6 @@
 # Modèle prédiction
 import pickle
 import pandas as pd
-# from sklearn.pipeline import Pipeline
-# from sklearn.preprocessing import FunctionTransformer
-
 
 
 def transform_naics(X):
