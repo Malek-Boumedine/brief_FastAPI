@@ -1,7 +1,5 @@
-# Schémas Pydantic
-# Dans un nouveau fichier schemas.py
+# Schémas Pydantic pour les formulaires de l'API
 from pydantic import BaseModel, Field, EmailStr
-from app.modeles import Users
 from typing import Union
 
 class LoanRequest(BaseModel):
@@ -62,17 +60,16 @@ class CreateUserRequest(BaseModel):
                 "password": "azerty12",
             }
         }        
+        
 
-class Token(BaseModel) : 
-    acces_token : str
-    token_type : str
-
-
-class TokenData(BaseModel) :
-    username : Union[str, None]
-    
-
-class UserDB(Users) : 
-    pass
-
+class NewPassword(BaseModel) : 
+    new_password : str = Field(..., min_length=8, description="longueur minimale de 8 caractères")
+    confirm_password : str = Field(..., min_length=8, description="longueur minimale de 8 caractères")
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "new_password": "azerty12",
+                "confirm_password": "azerty12",
+            }
+        }
 

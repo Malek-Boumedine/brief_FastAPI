@@ -1,14 +1,11 @@
 # Routes auth
 from fastapi import APIRouter, FastAPI, Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from pydantic import BaseModel
-from typing import Union, Annotated
-from datetime import datetime, timedelta
-from jose import JWTError, jwt
-from passlib.context import CryptContext
-from app.utils import db_dependency, bcrypt_context, oauth2_bearer, create_access_token, verify_token, get_password_hash, verify_password, authenticate_user
+from fastapi.security import OAuth2PasswordRequestForm
+from sqlmodel import text
+from typing import Annotated
+from app.utils import db_dependency, get_current_user, create_access_token, get_password_hash, authenticate_user
 from app.modeles import Users
-from app.schemas import Token, TokenData, UserDB
+from app.schemas import NewPassword
 
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -31,25 +28,25 @@ def login(form_data: Annotated[OAuth2PasswordRequestForm, Depends()], db: db_dep
     acces_token = create_access_token(data=token_data)
     return {"access_token": acces_token, "token_type": "bearer"}
 
- 
-
-def modify_password(new_password : str, db : db_dependency) -> UserDB : 
-    
-    pass
-
 
 @router.post("/activation")   # pour activer le compte et changer le mot de passe à la premiere connexion
-def activation() : 
+def activation(password_form : NewPassword, db: db_dependency, current_user : Annotated[Users, Depends(get_current_user)]) : 
+    user = db.execute(text("select * from users where email = :email"), {"email" : current_user.email}).first()
+    if not user : 
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur non trouvé dans la base de données")
+    if user.is_active :
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Le compte est déjà activé")
+    if not password_form.new_password :
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Le mot de passe est obligatoire")
+    if not password_form.confirm_password :
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Veuliiez confirmer le mot de passe")
+    if password_form.new_password != password_form.confirm_password :
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Les mots de passe ne correspondent pas")
     
-    
-    pass
-
-
-
-
-@router.post("/logout")   # pour se déconnecter
-def logout() : 
-    pass
+    hashed_password = get_password_hash(password_form.new_password)
+    db.execute(text("update users set hashed_password = :hashed_password, is_active = 1 where email = :email"), {"hashed_password": hashed_password, "email": user.email})
+    db.commit()
+    return {"message": "Le compte a été activé avec succès"}
 
 
 
