@@ -29,7 +29,7 @@ Note:
 """
 
 # Créer l'application FastAPI
-app = FastAPI(title="API de prêts", description="API pour prédire l'accord de prêts", version="0.1")
+app = FastAPI(title="API de prêts", description="API pour prédire l'accord de prêts", version="0.2")
 
 # inclure les routes
 app.include_router(route_loans.router)
