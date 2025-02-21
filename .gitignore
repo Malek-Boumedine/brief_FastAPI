@@ -6,4 +6,3 @@ test.db
 alembic/
 .env
 best_cat_boost.pkl
-best_cat_boost.pkl

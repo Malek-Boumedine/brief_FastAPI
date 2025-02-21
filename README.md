@@ -36,3 +36,6 @@ si le changement n'est pas pris en compte (par exemple ajout d'une contrainte), 
 
 ## astuce : pour générer une clé secrete forte : 
 taper cette commande dans un terminal `openssl rand -hex 32`
+
+## extraire le fichier pkl du modele 
+`best_cat_boost.tar.xz`
